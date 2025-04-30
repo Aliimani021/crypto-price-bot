@@ -51,7 +51,7 @@ async def main():
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     while True:
         await send_to_telegram(bot)
-        await asyncio.sleep(60)  # هر 1 دقیقه
+        await asyncio.sleep(60)  # اجرا هر 1 دقیقه
 
 
 if __name__ == "__main__":
