@@ -52,7 +52,7 @@ async def send_to_telegram(bot):
     now = datetime.now(IRAN_TZ).strftime("%Y-%m-%d %H:%M:%S")
 
     message = ""
-    message += f"💵 USDIRT: {tether_price:,.2f} IRT\n" if tether_price else "💵 USDTIRT: ⚠️ خطا\n"
+    message += f"💵 USDTIRT: {tether_price:,.2f} IRT\n" if tether_price else "💵 USDTIRT: ⚠️ خطا\n"
     message += f"₿ BTCUSDT: ${btc_price:,.2f}\n" if btc_price else "₿ BTCUSDT: ⚠️ خطا\n"
     message += f"Ξ ETHUSDT: ${eth_price:,.2f}\n" if eth_price else "Ξ ETHUSDT: ⚠️ خطا\n"
     message += f"{now}"
