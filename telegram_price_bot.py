@@ -9,17 +9,18 @@ import os
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")  # توکن از GitHub Secrets
 CHANNEL_ID = "@LiveRatecrypto"  # آیدی کانال
 NOBITEX_API_TETHER = "https://api.nobitex.ir/v2/trades/USDTIRT"
-NOBITEX_API_BTC = "https://api.nobitex.ir/v2/trades/BTCUSDT"
-NOBITEX_API_ETH = "https://api.nobitex.ir/v2/trades/ETHUSDT"
+LBank_API_BTC = "https://api.lbkex.com/v2/ticker.do?symbol=BTC_USDT"
+LBank_API_ETH = "https://api.lbkex.com/v2/ticker.do?symbol=ETH_USDT"
 IRAN_TZ = pytz.timezone("Asia/Tehran")
 
 
-async def get_nobitex_price(url):
+# دریافت قیمت تتر از نوبیتکس
+async def get_nobitex_price():
     try:
-        response = requests.get(url, timeout=5)
+        response = requests.get(NOBITEX_API_TETHER, timeout=5)
         response.raise_for_status()
         data = response.json()
-        if data["status"] == "ok" and data.get("trades"):
+        if data["status"] == "ok":
             last_trade = data["trades"][0]["price"]
             return int(last_trade) / 10  # تبدیل به تومان
         return None
@@ -28,10 +29,25 @@ async def get_nobitex_price(url):
         return None
 
 
+# دریافت قیمت از LBank برای BTC و ETH
+async def get_lbank_price(url):
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        if "ticker" in data:
+            last_price = data["ticker"]["last"]
+            return float(last_price)  # قیمت آخر
+        return None
+    except Exception as e:
+        print(f"Error fetching LBank price: {e}")
+        return None
+
+
 async def send_to_telegram(bot):
-    tether_price = await get_nobitex_price(NOBITEX_API_TETHER)
-    btc_price = await get_nobitex_price(NOBITEX_API_BTC)
-    eth_price = await get_nobitex_price(NOBITEX_API_ETH)
+    tether_price = await get_nobitex_price()  # قیمت تتر از نوبیتکس
+    btc_price = await get_lbank_price(LBank_API_BTC)  # قیمت بیت‌کوین از LBank
+    eth_price = await get_lbank_price(LBank_API_ETH)  # قیمت اتریوم از LBank
     now = datetime.now(IRAN_TZ).strftime("%Y-%m-%d %H:%M:%S")
 
     message = ""
